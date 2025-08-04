@@ -34,10 +34,8 @@ document.ready(
     // this script shouldn't be changed.
     () => {
         const pagebody = document.getElementsByTagName('body')[0]
-            // mobile
 
         const default_theme = 'light' // 'dark'
-            // mobile
 
         function setTheme(status = 'light') {
             if (status === 'dark') {
@@ -52,21 +50,18 @@ document.ready(
                 document.getElementById("mobile-toggle-theme").innerText = "· Light"
             }
         };
+
         setTheme(window.sessionStorage.theme ?? default_theme)
-            document.getElementsByClassName('toggleBtn')[0].addEventListener('click', () => {
+
+        document.getElementsByClassName('toggleBtn')[0].addEventListener('click', () => {
             window.sessionStorage.theme = window.sessionStorage.theme === 'dark' ? 'light' : 'dark'
             setTheme(window.sessionStorage.theme)
             document.getElementById("switch_default").checked = window.sessionStorage.theme === 'light'
-            })
-            // moblie
-            document.getElementById('mobile-toggle-theme').addEventListener('click', () => {
+        })
+        document.getElementById('mobile-toggle-theme').addEventListener('click', () => {
             window.sessionStorage.theme = window.sessionStorage.theme === 'dark' ? 'light' : 'dark'
             setTheme(window.sessionStorage.theme)
-                    // mobile
             document.getElementById("mobile-toggle-theme").innerText = window.sessionStorage.theme === 'light' ? "· Light" : "· Dark"
-
-                    // mobile
-            })
-        // ready function.
+        })
     }
 );
