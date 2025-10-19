@@ -6,7 +6,7 @@
   <link href="https://the-soloist.github.io/atom.xml" rel="self"/>
   
   <link href="https://the-soloist.github.io/"/>
-  <updated>2025-10-19T17:56:56.000Z</updated>
+  <updated>2025-10-19T18:05:43.000Z</updated>
   <id>https://the-soloist.github.io/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://the-soloist.github.io/2025/10/20/2025-qwb-quals-wp/"/>
     <id>https://the-soloist.github.io/2025/10/20/2025-qwb-quals-wp/</id>
     <published>2025-10-19T16:50:23.000Z</published>
-    <updated>2025-10-19T17:56:56.000Z</updated>
+    <updated>2025-10-19T18:05:43.000Z</updated>
     
     <content type="html"><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉，您输入的密码错误，请检查后重新输入。" data-whm="抱歉, 当前文章不能被校验, 不过您还是可以看看解密后的内容。">  <script id="hbeData" type="hbeData" data-hmacdigest="c509b748cd916ec202ddcc095ccb9271d1e67cd192626af10e2bcbf495dc1244">333859fcaefc67d50d42ebba0d01ab3b146e347f9af7b0811654187f9650ec8d40d5d29ab186f5155dd437d76627dd58fff2ee10955e341830c1a41b7d72d10dfefc8b49bb9864568f708749aa65557a7acf8ba299e053187c0132fadb4ff00227fbd6636a284e3a304e16d94a2d45a9682c542f5ccf72bf9b7e1a7df9f62f6cb062882e46c69e612bb03216a997e46e22a228cd1401d5877f530c96ddd62950372c1eec7c9377de01bbba8683d36b3dca476b53737aa26397fcfa26123d7810a7fffa79b8c1b47e17dcf7975f22f3e7314b15f4fa5d6261fbe46c0b80abe8ac03402e76a94e8cc76cbcffa6017233f6d3e0ec7c4349761871f8fb495236884f1f07ec1ed16e7be69552a6787d9d260e026fa797d404089e7fc4de907dc11ce7ed2ef1c557faddc6e13996147445e1b40896a9712a2630d44fb95b8e9ba80da6b84b71355f6b6aef70b784ca9ad067dbd89655acbc8a47a25b22636210cd3fc27dacabe6175c0c0b902aaa994c42841babd199acc46b67a41a8820f1d1573dae79ab81ef3c912068e2cd9ed712a96adba6c238563503f65d6d8cd9cfd92abaa2d9a3343417520003b26ca6f12e37155909ca277dd9a6bc41e2778741534d004b39352819a69e2e921a7f943381fffe6cd8c15b285a9abd0ae52cf16502600c4cdea7db8f35c9afa6bb972759048204e70e55196b592d46985aa2ff9180d6880b1b1eaafca433e2ee038801ad5d1c2a3c0dffc060b910e45efb8b66ed50b44b22f11511ac89c4e796a5b94e33eed2c43b8bcb780c7ce507acdb9c8d7059ba82d5cb28f5ce772c73fc57494ffe327acf9ae92aeaf71c635d1bf088a8597b3f5e4f19167b056656a5ebf10e88a5a4ed98397c6df12c94de9e6d69dc15c40c9d4e5f</script>  <div class="hbe hbe-content">    <div class="hbe hbe-input hbe-input-default">      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Please enter password to read.</span>      </label>    </div>  </div></div><script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
     
@@ -42,7 +42,7 @@
     <link href="https://the-soloist.github.io/1901/01/01/hello-world/"/>
     <id>https://the-soloist.github.io/1901/01/01/hello-world/</id>
     <published>1900-12-31T16:00:00.000Z</published>
-    <updated>2025-10-19T17:56:56.000Z</updated>
+    <updated>2025-10-19T18:05:43.000Z</updated>
     
     <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
     
