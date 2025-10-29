@@ -13,7 +13,7 @@
 
 
 
-<title>Hello World | Th3S&#39;s Blog</title>
+<title>第八届“强网”拟态防御国际精英挑战赛 初赛 | Th3S&#39;s Blog</title>
 
 
 
@@ -40,6 +40,45 @@
 
     
     
+        
+            <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
         
     
 
@@ -143,76 +182,11 @@
                 <div class="container">
     
     
-        <div class="post-toc">
-    <div class="tocbot-list">
-    </div>
-    <div class="tocbot-list-menu">
-        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
-        <a onclick="go_top()">Back to top</a>
-        <a onclick="go_bottom()">Go to bottom</a>
-    </div>
-</div>
-
-<script>
-    var tocbot_timer;
-    var DEPTH_MAX = 6; // 为 6 时展开所有
-    var tocbot_default_config = {
-        tocSelector: '.tocbot-list',
-        contentSelector: '.post-content',
-        headingSelector: 'h1, h2, h3, h4, h5',
-        orderedList: false,
-        scrollSmooth: true,
-        onClick: extend_click,
-    };
-
-    function extend_click() {
-        clearTimeout(tocbot_timer);
-        tocbot_timer = setTimeout(function() {
-            tocbot.refresh(obj_merge(tocbot_default_config, {
-                hasInnerContainers: true
-            }));
-        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
-    }
-
-    document.ready(function() {
-        tocbot.init(obj_merge(tocbot_default_config, {
-            collapseDepth: 1
-        }));
-    });
-
-    function expand_toc() {
-        var b = document.querySelector('.tocbot-toc-expand');
-        var expanded = b.getAttribute('data-expanded');
-        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
-        tocbot.refresh(obj_merge(tocbot_default_config, {
-            collapseDepth: expanded ? 1 : DEPTH_MAX
-        }));
-        b.innerText = expanded ? 'Expand all' : 'Collapse all';
-    }
-
-    function go_top() {
-        window.scrollTo(0, 0);
-    }
-
-    function go_bottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-
-    function obj_merge(target, source) {
-        for (var item in source) {
-            if (source.hasOwnProperty(item)) {
-                target[item] = source[item];
-            }
-        }
-        return target;
-    }
-</script>
-    
 
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">Hello World</h1>
+            <h1 class="post-title">第八届“强网”拟态防御国际精英挑战赛 初赛</h1>
             
                 <div class="post-meta">
                     
@@ -221,29 +195,34 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">January 1, 1901&nbsp;&nbsp;0:00:00</a>
+                        Date: <a href="#">October 29, 2025&nbsp;&nbsp;22:38:28</a>
                         </span>
                     
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="../../../../category/Write-Up/">Write Up</a>
+                            
+                        </span>
                     
                 </div>
             
         </header>
 
         <div class="post-content">
-            <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
+            <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉，您输入的密码错误，请检查后重新输入。" data-whm="抱歉, 当前文章不能被校验, 不过您还是可以看看解密后的内容。">
+  <script id="hbeData" type="hbeData" data-hmacdigest="39cae59d2723062b6017a356dfe4b7f76a161e2192009cb257bcc6bc4b15dc35">d07d3f75e1e6def23ee319295dc7742b0c0cbf52cd132de9ffe965d75329d1a7ee18a7dfb1f46e8623f499ff01a11feedaa4e6930ed35ff2548bf1e4a6f6df1160cfa9f61f421358fbb665bf52ba0d3a28f0a6e4b8b93a395105eef0083087c9cae9dd72f6557a1de64522025aee72461f98a7e1d9f29249c06c481ec62828d4aa9aceecd26ef0bf48a045a37235de8a1ec663ba474a60632c5a0addce2728b0fa6f898bf821a635703ab3adf0f484fe7ad6567389ea1e73bbbfc2f93bd788f8f15568439cb168e26e68cfdc1a524f2b12fd074691aa9ff91e5a7bc42c453f77b41da1ba6ce70f7f72554523b08c856b272e2d3b13370c67a52668637f664b67f9fe3f10926ad1ef49c00693ea9948e609f289180b9e65956b39b33e815a15b8df31321b6af94aad98cfa20deb5b1a69145ebcd87b83055b760485b64057ed50672095716312acbace53f92d645cf81c419d52f223fac9deec5da2a52aa9bd469906b3676e00125cc787bfed8a11c692aeada680bc61a0b21c967dcc6231c71d</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Please enter password to read.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
         </div>
 
         
@@ -257,7 +236,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="https://the-soloist.github.io/1901/01/01/hello-world/">https://the-soloist.github.io/1901/01/01/hello-world/</a></span>
+                        <span><a href="https://the-soloist.github.io/2025/10/29/2025-qwnt-quals-wp/">https://the-soloist.github.io/2025/10/29/2025-qwnt-quals-wp/</a></span>
                     </p>
                 
                 
@@ -275,6 +254,10 @@
                 <span>Tag(s):</span>
                 <span class="tag">
                     
+                    
+                        <a href="../../../../tag/CTF/"># CTF</a>
+                    
+                        
                 </span>
             </div>
             <div>
@@ -285,8 +268,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="../../../../2025/10/20/2025-qwb-quals-wp/">第九届“强网杯”全国网络安全挑战赛 初赛 Write Up</a>
             
+            <a class="next" rel="next" href="../../20/2025-qwb-quals-wp/">第九届“强网杯”全国网络安全挑战赛 初赛 Write Up</a>
             
         </section>
 
