@@ -83,7 +83,7 @@
     
 
 
-<meta name="generator" content="Hexo 8.1.0"><link rel="alternate" href="atom.xml" title="Th3S's Blog" type="application/atom+xml">
+<meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="atom.xml" title="Th3S's Blog" type="application/atom+xml">
 </head>
 
 <body>
@@ -284,6 +284,8 @@
 <p>实现了 5 个功能，add、delete、proxy（6 和 default 没用）。并且题目管理了一个全局的 heap_idx 结构体，用于计算数组的偏移和当前数量。</p>
 <p><img src="/2025/10/20/2025-qwb-quals-wp/.././2025-qwb-quals-wp/image-20251029235240077.png" alt="image-20251029235240077"></p>
 <p><img src="/2025/10/20/2025-qwb-quals-wp/.././2025-qwb-quals-wp/image-20251029235247518.png" alt="image-20251029235247518"></p>
+<p>还给了一个flask实现的webserver，并且能访问的是白名单index.html和flag.html，容器只给了一个index，所以猜测flag是后续利用漏洞需要的</p>
+<p><img src="/2025/10/20/2025-qwb-quals-wp/.././2025-qwb-quals-wp/image-20251030213304806.png" alt="image-20251030213304806"></p>
 <h4 id="漏洞一"><a href="#漏洞一" class="headerlink" title="漏洞一"></a>漏洞一</h4><p>漏洞点出在 delete 函数，这里是先<code>--heap_idx-&gt;list_num</code>然后才判断 chunk 是否存在，如果不存在也不会恢复<code>heap_idx-&gt;list_num</code></p>
 <p><img src="/2025/10/20/2025-qwb-quals-wp/.././2025-qwb-quals-wp/image-20251029235413149.png" alt="image-20251029235413149"></p>
 <p>而 add 功能中会先判断<code>heap_idx-&gt;list_num &lt;= 100</code>，然后把 heao 指针保存在<code>heap_list[heap_idx-&gt;list_idx]</code>。</p>
