@@ -330,7 +330,7 @@
 <h4 id="字符逃逸"><a href="#字符逃逸" class="headerlink" title="字符逃逸"></a>字符逃逸</h4><p>manage.cgi的set_publicfile功能，会过滤&#x2F;tmp&#x2F;store&#x2F;publicfile.txt文件中的字符，然后根据cnt1和cnt2参数，向dword_13484中写入一个字节。</p>
 <p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182348221.png" alt="image-20251101182348221"></p>
 <p>在字符过滤功能中，当v21等于80的时候会不经过过滤直接拷贝到v35[81]，导致单字节逃逸。</p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182352613.png" alt="image"><img src="./2025-qwnt-quals-wp/image-20251101182357358.png" alt="image-20251101182357358"></p>
+<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182352613.png" alt="image"><br><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182357358.png" alt="image-20251101182357358"></p>
 <h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>整理一下利用思路：</p>
 <ol>
 <li>解密admin密码后，调用watch创建rootKey文件</li>
