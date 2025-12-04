@@ -13,7 +13,7 @@
 
 
 
-<title>第八届“强网”拟态防御国际精英挑战赛 初赛 Write Up | Th3S&#39;s Blog</title>
+<title>第八届“强网”拟态防御国际精英挑战赛 初赛 Write Up：WIN！致敬 mt | Th3S&#39;s Blog</title>
 
 
 
@@ -251,7 +251,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">第八届“强网”拟态防御国际精英挑战赛 初赛 Write Up</h1>
+            <h1 class="post-title">第八届“强网”拟态防御国际精英挑战赛 初赛 Write Up：WIN！致敬 mt</h1>
             
                 <div class="post-meta">
                     
@@ -276,34 +276,34 @@
         </header>
 
         <div class="post-content">
-            <h1 id="IoT"><a href="#IoT" class="headerlink" title="IoT"></a>IoT</h1><h2 id="WIN！致敬-mt"><a href="#WIN！致敬-mt" class="headerlink" title="WIN！致敬 mt"></a>WIN！致敬 mt</h2><h3 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h3><p>启动脚本只开放了一个 80 端口</p>
+            <h1 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h1><p>启动脚本只开放了一个 80 端口</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> qemu-system-arm \</span><br><span class="line">  -M versatilepb \</span><br><span class="line">  -m 256 \</span><br><span class="line">  -kernel vmlinuz-3.2.0-4-versatile \</span><br><span class="line">  -initrd initrd.img-3.2.0-4-versatile \</span><br><span class="line">  -hda debian_wheezy_armel_standard.qcow2 \</span><br><span class="line">  -append <span class="string">&quot;root=/dev/sda1 console=ttyAMA0&quot;</span> \</span><br><span class="line">  -net nic -net user,hostfwd=tcp::80-:80 \</span><br><span class="line">  -nographic</span><br></pre></td></tr></table></figure>
 
 <p>先挂载 qcow 文件，提取文件系统</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 加载网络块设备模块</span></span><br><span class="line"><span class="built_in">sudo</span> modprobe nbd max_part=8</span><br><span class="line"><span class="comment"># 连接 qcow2 镜像到 nbd 设备</span></span><br><span class="line"><span class="built_in">sudo</span> qemu-nbd -c /dev/nbd0 your_image.qcow2</span><br><span class="line"><span class="comment"># 查看分区信息</span></span><br><span class="line"><span class="built_in">sudo</span> fdisk -l /dev/nbd0</span><br><span class="line"><span class="comment"># 挂载分区</span></span><br><span class="line"><span class="built_in">sudo</span> mount /dev/nbd0p1 /mnt</span><br><span class="line"><span class="comment"># 访问文件系统内容</span></span><br><span class="line"><span class="built_in">ls</span> /mnt</span><br><span class="line"><span class="comment"># 卸载与断开</span></span><br><span class="line"><span class="built_in">sudo</span> umount /mnt</span><br><span class="line"><span class="built_in">sudo</span> qemu-nbd -d /dev/nbd0</span><br></pre></td></tr></table></figure>
 
 <p>启动后看到 lighttpd 进程，&#x2F;var&#x2F;www 是 web 服务的根目录</p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182211026.png" alt="image-20251101182211026"></p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182214602.png" alt="image-20251101182214602"></p>
-<h3 id="CGI-分析"><a href="#CGI-分析" class="headerlink" title="CGI 分析"></a>CGI 分析</h3><p>先来分析下每个 cgi 的功能</p>
-<h4 id="auth-cgi"><a href="#auth-cgi" class="headerlink" title="auth.cgi"></a>auth.cgi</h4><p>index 在登录的时候往 auth.cgi 发送 POST 请求</p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182219628.png" alt="image-20251101182219628"></p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182211026.png" alt="image-20251101182211026"></p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182214602.png" alt="image-20251101182214602"></p>
+<h1 id="CGI-分析"><a href="#CGI-分析" class="headerlink" title="CGI 分析"></a>CGI 分析</h1><p>先来分析下每个 cgi 的功能</p>
+<h2 id="auth-cgi"><a href="#auth-cgi" class="headerlink" title="auth.cgi"></a>auth.cgi</h2><p>index 在登录的时候往 auth.cgi 发送 POST 请求</p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182219628.png" alt="image-20251101182219628"></p>
 <p>先对 password 进行了加密，然后和&#x2F;tmp&#x2F;store&#x2F;users.txt 文件中的密文进行对比</p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182223887.png" alt="image-20251101182223887"></p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182223887.png" alt="image-20251101182223887"></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@debian-armel:/tmp/store# <span class="built_in">cat</span> users.txt</span><br><span class="line">admin:dlZ4bWFsdjUDaiYCeCUqfGYUEhBvFW97dmtxcA==</span><br></pre></td></tr></table></figure>
 
 <p>ai 写一个解密脚本，得到 admin 账号的密码是 8g323##a08h33zx33@!B!$$$$$$$</p>
 <figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从 users.txt 读取的密文</span></span><br><span class="line">encrypted_password = <span class="string">&quot;dlZ4bWFsdjUDaiYCeCUqfGYUEhBvFW97dmtxcA==&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># XOR 密钥 (从代码中的 aN1kRout3r 找到)</span></span><br><span class="line">key = <span class="string">&quot;N1K_ROUT3R&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Step 1: Base64 解码</span></span><br><span class="line">decoded = base64.b64decode(encrypted_password)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Base64 decoded bytes: <span class="subst">&#123;decoded.<span class="built_in">hex</span>()&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Length: <span class="subst">&#123;<span class="built_in">len</span>(decoded)&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Step 2: XOR 解密</span></span><br><span class="line">password = <span class="built_in">bytearray</span>()</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(decoded)):</span><br><span class="line">    <span class="comment"># 使用循环密钥进行 XOR</span></span><br><span class="line">    xor_byte = decoded[i] ^ <span class="built_in">ord</span>(key[i % <span class="built_in">len</span>(key)])</span><br><span class="line">    password.append(xor_byte)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 尝试解码为字符串</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    decrypted_password = password.decode(<span class="string">&#x27;ascii&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\nDecrypted password: <span class="subst">&#123;decrypted_password&#125;</span>&quot;</span>)</span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\nDecrypted password (hex): <span class="subst">&#123;password.<span class="built_in">hex</span>()&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Decrypted password (raw bytes): <span class="subst">&#123;<span class="built_in">bytes</span>(password)&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
 
 <p>登录之后的后台界面</p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182235151.png" alt="image-20251101182235151"></p>
-<h4 id="upload-cgi"><a href="#upload-cgi" class="headerlink" title="upload.cgi"></a>upload.cgi</h4><p>actions：</p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182235151.png" alt="image-20251101182235151"></p>
+<h2 id="upload-cgi"><a href="#upload-cgi" class="headerlink" title="upload.cgi"></a>upload.cgi</h2><p>actions：</p>
 <ul>
 <li>fake_upload：一个假的上传接口</li>
 <li>download：根据 path 参数，读取文件内容，但限制了文件最后几个字节是 nik.gif 和黑白名单检测</li>
 <li>upload_pubkey：根据 filecontent 的内容往&#x2F;tmp&#x2F;store&#x2F;publicfile.txt 写入内容</li>
 </ul>
-<h4 id="manage-cgi"><a href="#manage-cgi" class="headerlink" title="manage.cgi"></a>manage.cgi</h4><p>actions：</p>
+<h2 id="manage-cgi"><a href="#manage-cgi" class="headerlink" title="manage.cgi"></a>manage.cgi</h2><p>actions：</p>
 <ul>
 <li>status&#x2F;dashboard：无实际功能</li>
 <li>viewconf：读&#x2F;tmp&#x2F;store&#x2F;config.txt 文件的前 0x1000 字节</li>
@@ -317,21 +317,21 @@
 <li>id_save：将 id_val 的值写入&#x2F;tmp&#x2F;store&#x2F;id.txt 文件</li>
 <li>set_publicfile：将&#x2F;tmp&#x2F;store&#x2F;publicfile.txt 的内容十六进制转 bytes，过滤字符后，根据 cnt1 和 cnt2 将指定字节写入 dword_13484[cnt2]</li>
 </ul>
-<h4 id="watch"><a href="#watch" class="headerlink" title="watch"></a>watch</h4><p>往&#x2F;tmp&#x2F;rootkey 文件里写随机字节</p>
-<h3 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><h4 id="root-功能的负数溢出-栈溢出"><a href="#root-功能的负数溢出-栈溢出" class="headerlink" title="root 功能的负数溢出+栈溢出"></a>root 功能的负数溢出+栈溢出</h4><p>manage.cgi 当传入 rk 参数的时候，会调用 rook 功能的后门函数</p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182247207.png" alt="image-20251101182247207"></p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182251909.png" alt="image-20251101182251909"></p>
+<h2 id="watch"><a href="#watch" class="headerlink" title="watch"></a>watch</h2><p>往&#x2F;tmp&#x2F;rootkey 文件里写随机字节</p>
+<h1 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h1><h2 id="root-功能的负数溢出-栈溢出"><a href="#root-功能的负数溢出-栈溢出" class="headerlink" title="root 功能的负数溢出+栈溢出"></a>root 功能的负数溢出+栈溢出</h2><p>manage.cgi 当传入 rk 参数的时候，会调用 rook 功能的后门函数</p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182247207.png" alt="image-20251101182247207"></p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182251909.png" alt="image-20251101182251909"></p>
 <p>功能将&#x2F;tmp&#x2F;store&#x2F;id.txt 文件的内容，转换成整数，然后从 dword_13484 中拷贝 size 大小的数据到栈上。由于 size 是有符号比较，负数的时候可以绕过检查，拷贝一块巨大的内容到栈上。buf[(size ^ 0x13) &amp; 1])实际上调用的还是 xor_decrypt_data，然后 size 作为 memcpy 参数进行拷贝。</p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182324427.png" alt="image-20251101182324427"></p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182327793.png" alt="image-20251101182327793"></p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182331075.png" alt="image-20251101182331075"></p>
-<h4 id="路径截断"><a href="#路径截断" class="headerlink" title="路径截断"></a>路径截断</h4><p>upload.cgi 的 action&#x3D;download 中，snprintf 只保存了 0x60 字节，之后的内容会被截断，所以我们可以构造.&#x2F;.&#x2F;XXXXX.&#x2F;rootKeynik.gif 绕过检查，读取&#x2F;tmp&#x2F;rootkey</p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182334226.png" alt="image-20251101182334226"></p>
-<h4 id="字符逃逸"><a href="#字符逃逸" class="headerlink" title="字符逃逸"></a>字符逃逸</h4><p>manage.cgi 的 set_publicfile 功能，会过滤&#x2F;tmp&#x2F;store&#x2F;publicfile.txt 文件中的字符，然后根据 cnt1 和 cnt2 参数，向 dword_13484 中写入一个字节。</p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182348221.png" alt="image-20251101182348221"></p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182324427.png" alt="image-20251101182324427"></p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182327793.png" alt="image-20251101182327793"></p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182331075.png" alt="image-20251101182331075"></p>
+<h2 id="路径截断"><a href="#路径截断" class="headerlink" title="路径截断"></a>路径截断</h2><p>upload.cgi 的 action&#x3D;download 中，snprintf 只保存了 0x60 字节，之后的内容会被截断，所以我们可以构造.&#x2F;.&#x2F;XXXXX.&#x2F;rootKeynik.gif 绕过检查，读取&#x2F;tmp&#x2F;rootkey</p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182334226.png" alt="image-20251101182334226"></p>
+<h2 id="字符逃逸"><a href="#字符逃逸" class="headerlink" title="字符逃逸"></a>字符逃逸</h2><p>manage.cgi 的 set_publicfile 功能，会过滤&#x2F;tmp&#x2F;store&#x2F;publicfile.txt 文件中的字符，然后根据 cnt1 和 cnt2 参数，向 dword_13484 中写入一个字节。</p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182348221.png" alt="image-20251101182348221"></p>
 <p>在字符过滤功能中，当 v21 等于 80 的时候会不经过过滤直接拷贝到 v35[81]，导致单字节逃逸。</p>
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182352613.png" alt="image"><br><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182357358.png" alt="image-20251101182357358"></p>
-<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>整理一下利用思路：</p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182352613.png" alt="image"><br><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182357358.png" alt="image-20251101182357358"></p>
+<h1 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h1><p>整理一下利用思路：</p>
 <ol>
 <li>解密 admin 密码后，调用 watch 创建 rootKey 文件</li>
 <li>利用 upload_pubkey 和 set_publicfile 逐字节往 dword_13484 中写入 payload<ul>
@@ -347,8 +347,8 @@
 <p>因为调用 root_key 之后，函数无法正常返回，reqests 会一直等待响应，所以需要单独 logs 函数，获取 flag</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">login(<span class="string">&quot;admin&quot;</span>, <span class="string">&quot;8g323##a08h33zx33@!B!$$$$$$$&quot;</span>)</span><br><span class="line">logs()</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2025/10/29/2025-qwnt-quals-wp/.././2025-qwnt-quals-wp/image-20251101182405897.png" alt="image-20251101182405897"></p>
-<h2 id="Poor-communication-protocol"><a href="#Poor-communication-protocol" class="headerlink" title="Poor communication protocol"></a>Poor communication protocol</h2><p>文章发布于看雪论坛：<a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-288962.htm">[原创]利用 AI 复现 2025 强网拟态初赛 2 解 IoT 题目：Poor communication protocol</a></p>
+<p><img src="/2025/10/29/2025-qwnt-quals-iot1-wp/.././2025-qwnt-quals-iot1-wp/image-20251101182405897.png" alt="image-20251101182405897"></p>
+<h1 id="Poor-communication-protocol"><a href="#Poor-communication-protocol" class="headerlink" title="Poor communication protocol"></a>Poor communication protocol</h1><p>文章发布于看雪论坛：<a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-288962.htm">[原创]利用 AI 复现 2025 强网拟态初赛 2 解 IoT 题目：Poor communication protocol</a></p>
 
         </div>
 
@@ -363,7 +363,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="https://the-soloist.github.io/2025/10/29/2025-qwnt-quals-wp/">https://the-soloist.github.io/2025/10/29/2025-qwnt-quals-wp/</a></span>
+                        <span><a href="https://the-soloist.github.io/2025/10/29/2025-qwnt-quals-iot1-wp/">https://the-soloist.github.io/2025/10/29/2025-qwnt-quals-iot1-wp/</a></span>
                     </p>
                 
                 
@@ -398,7 +398,7 @@
                 <a class="prev" rel="prev" href="../../../11/02/2025-qwnt-quals-iot2-wp/">利用AI复现2025强网拟态初赛2解IoT题目：Poor communication protocol</a>
             
             
-            <a class="next" rel="next" href="../../20/2025-qwb-quals-wp/">第九届“强网杯”全国网络安全挑战赛 初赛 Write Up</a>
+            <a class="next" rel="next" href="../../20/2025-qwb-quals-pwn1-wp/">第九届“强网杯”全国网络安全挑战赛 初赛 Write Up：sockserver</a>
             
         </section>
 
