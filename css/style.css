@@ -561,6 +561,10 @@ header .menu label {
   font-weight: normal;
   font-family: 'mbshsj';
 }
+.description {
+  font-size: 1em;
+  font-family: 'mbshsj';
+}
 .links a {
   padding: 0 5px;
 }
@@ -569,10 +573,6 @@ header .menu label {
 }
 .links .iconfont {
   font-size: 2em;
-}
-.description {
-  font-size: 1em;
-  font-family: 'mbshsj';
 }
 .post-wrap {
   position: relative;
