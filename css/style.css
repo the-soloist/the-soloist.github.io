@@ -559,11 +559,9 @@ header .menu label {
 .nickname {
   font-size: 2em;
   font-weight: normal;
-  font-family: 'mbshsj';
 }
 .description {
   font-size: 1em;
-  font-family: 'mbshsj';
 }
 .links a {
   padding: 0 5px;
